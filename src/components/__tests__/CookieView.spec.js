@@ -5,6 +5,7 @@ import { createVuetify } from 'vuetify'
 import { createStore } from 'vuex'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import ResizeObserver from 'resize-observer-polyfill'
 
 // Mocking child components
 vi.mock('@/components/CountrySelecter.vue', () => ({
@@ -41,7 +42,7 @@ describe('CookieView.vue', () => {
       directives
     })
 
-    global.ResizeObserver = require('resize-observer-polyfill')
+    window.ResizeObserver = ResizeObserver
 
     store = createStore({
       state: {
@@ -77,7 +78,7 @@ describe('CookieView.vue', () => {
         plugins: [vuetify, store]
       }
     })
-    expect(wrapper.find('v-toolbar-title').text()).toBe('Configure your Cookie Solution')
+    expect(wrapper.find('#cookieToolbar').text()).toBe('Configure your Cookie Solution')
   })
 
   it('must generate the correct JSON preview', () => {
@@ -135,19 +136,9 @@ describe('CookieView.vue', () => {
       }
     })
 
-    // Uso de mutaciones para cambiar el estado
-    await wrapper.vm.$store.dispatch('setBannerProperty', {
-      key: 'closeButtonDisplay',
-      value: true
-    })
-    await wrapper.vm.$store.dispatch('setBannerProperty', {
-      key: 'rejectButtonDisplay',
-      value: false
-    })
-    await wrapper.vm.$store.dispatch('setBannerProperty', {
-      key: 'closeButtonRejects',
-      value: false
-    })
+    wrapper.vm.configDefault.banner.closeButtonDisplay = true
+    wrapper.vm.configDefault.banner.rejectButtonDisplay = false
+    wrapper.vm.configDefault.banner.closeButtonRejects = false
 
     wrapper.vm.saveData()
 
